@@ -1,0 +1,66 @@
+<h6> 
+	<nav><strong>
+		<div class="u-pull-right">
+			<h6  id="ident">  {{ident}}</h6>  <!-- plutôt prenom nom de la pers. connectee -->
+			<a   id="deconnexion" href="/">Déconnexion</a>
+		</div>
+		</strong>
+	</nav> 
+</h6>
+
+<br/>
+
+
+ <div class="container">
+	
+	
+		
+	 <div id="connectionFormContainer" class="one-half column value-prop">
+			<br/>
+			<h5>Remplacer le responsable de formation par un responsable déjà inscrit</h5>
+			<select id="select">
+				<option disabled>--Selectionner le responsable--</option>
+				<script>
+
+					var tabRespFormation = "{{respFormation}}".split("#");
+					selectResp = document.getElementById("select");
+					for (i = 0 ; i < tabRespFormation.length - 1; i++) { 
+						optionResponsable = document.createElement("option");		
+						optionResponsable.appendChild(document.createTextNode(tabRespFormation[i]));
+						select.appendChild(optionResponsable);
+						}				
+				</script>
+			</select>
+	
+			<button type="submit" id="btnSelectResp" class="button-primary">Valider</button>
+			
+			{{#section 'scripts'}}
+			<script>
+				idFormation = document.location.search.slice(1);
+				btnSelectResp = document.getElementById("btnSelectResp");
+				btnSelectResp.onclick = function(){
+					const body = JSON.stringify({
+						responsable: document.getElementById('select').value,
+						formation: idFormation
+					})
+					const headers = { 'Content-Type': 'application/json' }
+				  
+					fetch('/api/changementRespFormation', { method: 'post', body, headers })
+						.then(resp => {
+							if(resp.status < 200 || resp.status >= 300)
+								throw new Error(`Request failed with status ${resp.status}`)
+							return resp.json()
+						})
+						.then(json => {    		  	
+							if  (json.result ===  'success') 
+								document.location.href="/gestionFormation?"+idFormation;
+							else document.getElementById("erreur").innerHTML = '<b>' + json.message + '</b>';			
+						})
+						.catch(err => {	})		// traitement des erreurs levées côté client 		    	
+				};
+			</script>
+			{{/section}}
+			
+		  
+	</div>
+</div>

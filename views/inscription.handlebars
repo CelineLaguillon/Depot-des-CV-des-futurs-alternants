@@ -1,0 +1,105 @@
+<br/>
+
+
+ <div class="container">
+     	
+    <div class="value-props row">
+        <div id="connectionFormContainer" class="one-half column value-prop">
+		  <h5>Inscription</h5>
+		  <form class="form-horizontal" role="form" id="inscriptionForm">
+			<input type="hidden" name="_csrf" value="{{csrf}}">
+			
+			<div class="form-group">
+			  <label for="fieldPrenom" class="col-sm-2 control-label">Prénom</label>
+			  <div class="col-sm-4">
+				<input type="text" class="form-control" required 
+					id="fieldPrenom" name="prenom">
+			  </div>
+			</div>
+
+			<div class="form-group">
+			  <label for="fieldNom" class="col-sm-2 control-label">Nom</label>
+			  <div class="col-sm-4">
+				<input type="text" class="form-control" required 
+					id="fieldNom" name="nom">
+			  </div>
+			</div>
+
+			<!--<div class="form-group">
+			  <label for="fieldTel" class="col-sm-2 control-label">Numéro de téléphone</label>
+			  <div class="col-sm-4">
+				<input type="tel" class="form-control" required 
+					id="fieldTel" name="telephone">
+			  </div>
+			</div> -->
+
+			<div class="form-group">
+			  <label for="fieldIdent" class="col-sm-2 control-label">Adresse mail</label>
+			  <div class="col-sm-4">
+				<input autofocus type="email" class="form-control" required
+				id="fieldIdent" name="ident">
+			  </div>
+			</div>
+
+			<div class="form-group">
+			  <label for="fieldMdp" class="col-sm-2 control-label">Mot de passe</label>
+			  <div class="col-sm-4">
+				<input type="password" class="form-control" required 
+					id="fieldMdp" name="mdp">
+			  </div>
+			</div>
+
+			<div class="form-group">
+			  <label for="fieldMdpConf" class="col-sm-2 control-label">Confirmation du mot de passe</label>
+			  <div class="col-sm-4">
+				<input type="password" class="form-control" required 
+					id="fieldMdpConf" name="mdpConfirmation">
+			  </div>
+			</div>
+
+			<div class="form-group">
+			  <div class="col-sm-offset-2 col-sm-4">
+				<button type="submit" class="button-primary">Inscription</button>
+			  </div>
+			</div>
+			<div class="erreur" id="erreur">
+			</div>
+		  </form>
+		</div>
+	</div>
+ </div>
+
+{{#section 'scripts'}}
+<script>
+  document.getElementById('inscriptionForm')
+    .addEventListener('submit', evt => {
+      evt.preventDefault()
+      const form = evt.target
+      const body = JSON.stringify({
+        _csrf: form.elements._csrf.value,
+        ident: form.elements.ident.value,
+        mdp: form.elements.mdp.value,
+		mdpConfirmation : form.elements.mdpConfirmation.value,
+		prenom: form.elements.prenom.value,
+		nom: form.elements.nom.value,
+		//tel : form.elements.telephone.value
+      })
+      const headers = { 'Content-Type': 'application/json' }
+      
+      fetch('/api/inscription', { method: 'post', body, headers })
+        .then(resp => {
+          if(resp.status < 200 || resp.status >= 300)
+            throw new Error(`Request failed with status ${resp.status}`)
+          return resp.json()
+        })
+        .then(json => {   
+			if  (json.result ===  'success') 
+				document.location.href="/accueilFormations" ;
+			else //document.getElementById("erreur").innerHTML = '<b>' + json.message + '</b>';
+				alert (json.message);			
+        })
+        .catch(err => {	})		// traitement des erreurs levées côté client 		    
+	
+  })
+</script>
+{{/section}}

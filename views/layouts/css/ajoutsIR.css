@@ -1,0 +1,21 @@
+.header {
+    margin: 30px 25px 50px 0px;
+}
+
+input[type="email"],
+input[type="password"],
+input[type="file"]  {
+	background-color: transparent;
+	margin: 4px 25px 15px 0px;
+}
+
+.erreur {
+	color: #CC0000 ;
+}
+
+footer {
+	position: absolute; 
+	bottom: 4px; 
+	left: 8px; 
+	right: 4px
+}

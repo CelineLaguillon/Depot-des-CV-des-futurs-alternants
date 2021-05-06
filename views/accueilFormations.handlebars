@@ -1,0 +1,52 @@
+<h6> 
+	<nav><strong>
+		<div class="u-pull-right">
+			<h6  id="ident">  {{session.prenom}}  {{session.nom}}</h6>   
+			<a   id="deconnexion" href="/">Déconnexion</a>
+		</div>
+		</strong>
+	</nav> 
+</h6>
+	
+<br/><br/>
+<br/><br/>
+<div class="container">
+
+<table id="table">
+
+	<tr> <th> Département </th> <th> Formation </th> </tr>
+
+</table>
+<a href="/">Home</a>
+</div>
+
+{{#section 'scripts'}}
+<script>
+		var tabDpts =     {{{departements}}}  ;    
+		var tabDeTabFormations = {{{formations}}}; 
+		table = document.getElementById("table");
+		for (i = 0 ; i < tabDpts.length ; i++) { 
+			dpt= tabDpts[i];
+		    tabFormations = tabDeTabFormations[i]; //.split("$");
+			//alert(dpt + " " + tabFormations.length);
+			for (j = 0 ; j < tabFormations.length ; j++) {
+				tr = document.createElement("tr");
+				tdDpt = document.createElement("td");
+				tdDpt.appendChild(document.createTextNode(dpt));
+				tdFormation = document.createElement("td");
+				tdFormation.appendChild(document.createTextNode(tabFormations[j]));
+				tdDepot = document.createElement("td");
+				eltA = document.createElement("a");
+				eltA.setAttribute("href","/depot_"+i+"_"+j);
+				
+				eltA.appendChild(document.createTextNode("Déposez votre CV"));
+				tdDepot.appendChild(eltA);
+				tr.appendChild (tdDpt);
+				tr.appendChild (tdFormation);
+				tr.appendChild (tdDepot);	
+ 								
+				table.appendChild(tr);
+			}	 
+		} 
+</script>
+{{/section}}

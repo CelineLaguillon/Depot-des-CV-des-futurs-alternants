@@ -1,0 +1,35 @@
+{
+  "name": "apola",
+  "version": "1.0.0",
+  "main": "apola.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "IR",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "express-handlebars": "^4.0.0",
+    "express-session": "^1.17.0",
+    "mongod": "^2.0.0",
+    "mongodb": "^2.2.36",
+    "mongodb-autoincrement": "^1.0.1",
+    "mongoose": "^4.13.20",
+    "mongoose-auto-increment": "^5.0.1",
+    "multiparty": "^4.2.1",
+    "nodemailer": "^6.4.6"
+  },
+  "directories": {
+    "lib": "lib"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://gitlab.com/celine_laguillon/application-alternance.git"
+  },
+  "bugs": {
+    "url": "https://gitlab.com/celine_laguillon/application-alternance/issues"
+  },
+  "homepage": "https://gitlab.com/celine_laguillon/application-alternance#readme",
+  "description": ""
+}

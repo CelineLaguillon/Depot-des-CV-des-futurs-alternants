@@ -1,0 +1,90 @@
+
+
+
+<br/>
+
+
+ <div class="container">
+     	
+    <div class="value-props row">
+        <div class="one-half column value-prop">
+			<h5>Première connexion ? <br/><a href="/inscription"> inscrivez-vous </a> </h5>
+		</div>
+		<div id="connectionFormContainer" class="one-half column value-prop">
+		  <h5>Déja inscrit, connectez-vous </h5>
+		  <form class="form-horizontal" role="form" id="connectionForm">
+			<input type="hidden" name="_csrf" value="{{csrf}}">
+			<div class="form-group">
+			  <label for="fieldIdent" class="col-sm-2 control-label">Adresse mail</label>
+			  <div class="col-sm-4">
+				<input autofocus type="email" class="form-control" 
+				id="fieldIdent" name="ident">    
+			  </div>
+			</div>
+			<div class="form-group">
+			  <label for="fieldMdp" class="col-sm-2 control-label">Mot de passe</label>
+			  <div class="col-sm-4">
+				<input type="password" class="form-control" required 
+					id="fieldMdp" name="mdp">  
+			  </div>
+			</div>
+			<div class="form-group">
+			  <div class="col-sm-offset-2 col-sm-4">
+				<button type="submit" class="button-primary">Connexion</button>
+			  </div>
+			</div>
+			<div class="erreur" id="erreur"/>
+			 
+		  </form>
+		</div>
+	</div>
+</div>
+
+{{#section 'scripts'}}
+<script>
+  document.getElementById('connectionForm')
+    .addEventListener('submit', evt => {
+      evt.preventDefault()
+      const form = evt.target
+      const body = JSON.stringify({
+        _csrf: form.elements._csrf.value,
+        ident: form.elements.ident.value,
+        mdp: form.elements.mdp.value
+      })
+      const headers = { 'Content-Type': 'application/json' }
+      
+      fetch('/api/connexion', { method: 'post', body, headers })
+        .then(resp => {
+          if(resp.status < 200 || resp.status >= 300)
+            throw new Error(`Request failed with status ${resp.status}`)
+          return resp.json()
+        })
+        .then(json => {    		  
+		    if  (json.result !==  'success') 
+				document.getElementById("erreur").innerHTML = '<b>' + json.message + '</b>';
+			else { 
+				switch (json.session.role) {
+					case 'admin':							 
+						document.location.href="/accueilDepartementsAdmin" 
+						break;
+					case 'MPA':  /*MPA : membre du pôle alternance */
+						document.location.href="accueilDepartements"  
+						break;
+					case 'RD':	/* RD : responsable de département */
+						document.location.href="departement_" + json.session.dpt ;
+						break;
+					case 'RF':	/* RF : responsable de formation */
+						 document.location.href="formation_" + json.session.dpt + "_" +json.session.formation ; 					 
+						break;
+					default:	/* candidat */
+						alert("candidat");
+						document.location.href="accueilFormations" 		
+						break;
+					}	 				
+			}
+						
+        })
+        .catch(err => {	})		// traitement des erreurs levées côté client 		    	
+  })
+</script>
+{{/section}}

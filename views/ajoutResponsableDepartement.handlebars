@@ -1,0 +1,173 @@
+<h6> 
+	<nav><strong>
+		<div class="u-pull-right">
+			<h6  id="ident">  {{ident}}</h6>  <!-- plutôt prenom nom de la pers. connectee -->
+			<a   id="deconnexion" href="/">Déconnexion</a>
+		</div>
+		</strong>
+	</nav> 
+</h6>
+
+<br/>
+
+
+ <div class="container">
+	
+	
+		
+	 <div id="connectionFormContainer" class="one-half column value-prop">
+			<br/>
+			<h5>Responsable déjà inscrit</h5>
+			<select id="select">
+				<option disabled>--Selectionner le responsable--</option>
+				<script>
+					var tabRespDepartement = "{{respDepartement}}".split("#");
+					selectResp = document.getElementById("select");
+					for (i = 0 ; i < tabRespDepartement.length - 1; i++) { 
+						optionResponsable = document.createElement("option");		
+						optionResponsable.appendChild(document.createTextNode(tabRespDepartement[i]));
+						select.appendChild(optionResponsable);
+						}				
+				</script>
+			</select>
+	
+			<button type="submit" id="btnSelectResp" class="button-primary">Valider</button>
+			
+			{{#section 'scripts'}}
+			<script>
+				idDpt = document.location.search.slice(1)
+				btnSelectResp = document.getElementById("btnSelectResp");
+				btnSelectResp.onclick = function(){
+					const body = JSON.stringify({
+						responsable: document.getElementById('select').value,
+						departement: idDpt
+					})
+					const headers = { 'Content-Type': 'application/json' }
+				  
+					fetch('/api/ajoutRespDepartement', { method: 'post', body, headers })
+						.then(resp => {
+							if(resp.status < 200 || resp.status >= 300)
+								throw new Error(`Request failed with status ${resp.status}`)
+							return resp.json()
+						})
+						.then(json => {    		  	
+							if  (json.result ===  'success') 
+								document.location.href="/ajoutResponsableDepartement"+document.location.search() ;
+							else document.getElementById("erreur").innerHTML = '<b>' + json.message + '</b>';			
+						})
+						.catch(err => {	})		// traitement des erreurs levées côté client 		    	
+					return 0;
+				};
+				
+			</script>
+			{{/section}}
+			
+				<br/><br/><br/>
+				<h5>Enlever un responsable au département</h5>
+				<select id="select">
+					<option disabled>--Selectionner le responsable--</option>
+					<script>
+						var tabRespDepartement = "{{respDepartement}}".split("#");
+						selectResp = document.getElementById("select");
+						for (i = 0 ; i < tabRespDepartement.length - 1; i++) { 
+							optionResponsable = document.createElement("option");		
+							optionResponsable.appendChild(document.createTextNode(tabRespDepartement[i]));
+							select.appendChild(optionResponsable);
+						}				
+					</script>
+				</select>
+			<button type="submit" id="btnSelectResp" class="button-primary">Valider</button>
+				
+		</div>
+		
+		
+		<div id="connectionFormContainer" class="one-half column value-prop">
+		  <h5>Responsable non inscrit</h5>
+		  <form class="form-horizontal" role="form" id="inscriptionResp">
+			
+			<div class="form-group">
+			  <label for="fieldPrenom" class="col-sm-2 control-label">Prénom</label>
+			  <div class="col-sm-4">
+				<input type="text" class="form-control" required 
+					id="fieldPrenom" name="prenom">
+			  </div>
+			</div>
+
+			<div class="form-group">
+			  <label for="fieldNom" class="col-sm-2 control-label">Nom</label>
+			  <div class="col-sm-4">
+				<input type="text" class="form-control" required 
+					id="fieldNom" name="nom">
+			  </div>
+			</div>
+
+			<div class="form-group">
+			  <label for="fieldIdent" class="col-sm-2 control-label">Adresse mail</label>
+			  <div class="col-sm-4">
+				<input autofocus type="email" class="form-control" required
+				id="fieldIdent" name="ident">
+			  </div>
+			</div>
+
+			<div class="form-group">
+			  <label for="fieldMdp" class="col-sm-2 control-label">Mot de passe</label>
+			  <div class="col-sm-4">
+				<input type="password" class="form-control" required 
+					id="fieldMdp" name="mdp">
+			  </div>
+			</div>
+
+			<div class="form-group">
+			  <label for="fieldMdpConf" class="col-sm-2 control-label">Confirmation du mot de passe</label>
+			  <div class="col-sm-4">
+				<input type="password" class="form-control" required 
+					id="fieldMdpConf" name="mdpConfirmation">
+			  </div>
+			</div>
+
+			<div class="form-group">
+			  <div class="col-sm-offset-2 col-sm-4">
+				<button id="buttonNouveauResp" type="submit" class="button-primary">Inscription</button>
+			  </div>
+			</div>
+			<div class="erreur" id="erreur">
+			</div>
+		  </form>
+		  
+
+			<script>
+				idDpt = document.location.search.slice(1)
+				 document.getElementById('inscriptionResp')
+				.addEventListener('submit', evt => {
+					evt.preventDefault()
+					const form = evt.target
+					const body = JSON.stringify({
+						departement: idDpt,
+						prenom: form.elements.prenom.value,
+						nom: form.elements.nom.value,
+						ident: form.elements.ident.value,
+						mdp: form.elements.mdp.value,
+						mdpConfirmation : form.elements.mdpConfirmation.value
+					})
+				  const headers = { 'Content-Type': 'application/json' }
+				  
+				  fetch('/api/nouveauRespDepartement', { method: 'post', body, headers })
+					.then(resp => {
+					  if(resp.status < 200 || resp.status >= 300)
+						throw new Error(`Request failed with status ${resp.status}`)
+					  return resp.json()
+					})
+					.then(json => {   
+						if  (json.result ===  'success') 
+							document.location.href="/ajoutResponsableDepartement"+document.location.search();
+						else //document.getElementById("erreur").innerHTML = '<b>' + json.message + '</b>';
+							alert (json.message);			
+					})
+					.catch(err => {	})		// traitement des erreurs levées côté client 		    	
+				})
+			</script>
+		  
+		  
+		</div>
+	</div>
+</div>

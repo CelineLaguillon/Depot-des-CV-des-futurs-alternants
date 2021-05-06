@@ -1,0 +1,53 @@
+<h6> 
+	<nav><strong>
+		<div class="u-pull-right">
+			<h6  id="ident">  {{session.prenom}}  {{session.nom}}</h6>  
+			<a   id="deconnexion" href="/">Déconnexion</a>
+		</div>
+		</strong>
+	</nav> 
+</h6>
+	
+<br/><br/>
+<br/><br/>
+<h5> Département {{session.nomDpt}}</h5> 
+<h4> Formation {{session.nomFormation}}</h4>
+<div class="container">
+	 <table id="table">
+
+	<tr> <th> Prénom </th> <th> Nom </th> <th> Fichier à télécharger</th></tr>
+
+</table>
+</div>
+<br/><br/>
+
+
+{{#section 'scripts'}}
+  <script>
+		var table = document.getElementById("table");
+		var tabDepots = {{{depots}}}  ;    
+		var tabPrenoms = {{{prenoms}}}  ; 
+		var tabNoms = {{{noms}}};
+		for (i = 0 ; i <  tabDepots.length ; i++) { 
+			depot= tabDepots[i];
+		    tr = document.createElement("tr");
+				tdNom = document.createElement("td");
+				tdNom.appendChild(document.createTextNode(tabPrenoms[i]));
+				tdPrenom = document.createElement("td");
+				tdPrenom.appendChild(document.createTextNode(tabNoms[i]));
+				tdDownload = document.createElement("td");
+				eltA = document.createElement("a");
+				eltA.setAttribute("href","/download");  // i indice du dpt // indice de la formation dans le dpt
+				
+				eltA.appendChild(document.createTextNode(depot.nom_document));
+				tdDownload.appendChild(eltA); 
+			tr.appendChild (tdNom);
+			tr.appendChild (tdPrenom);
+			tr.appendChild (tdDownload);	
+ 								
+			table.appendChild(tr);
+			 	 
+		} 
+		
+</script>
+{{/section}}

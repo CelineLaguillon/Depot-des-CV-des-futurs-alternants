@@ -1,0 +1,163 @@
+<h6> 
+	<nav><strong>
+		<div class="u-pull-right">
+			<h6  id="ident">{{ident}}</h6>  <!-- plutôt prenom nom de la pers. connectee -->
+			<a   id="deconnexion" href="/">Déconnexion</a>
+		</div>
+		</strong>
+	</nav> 
+</h6>
+	
+<br/><br/>
+<br/><br/>
+<div class="container">
+
+<table id="table">
+
+	<tr> <th> Département </th> <th> Supprimer le département </th> <th> Ajouter un responsable au département </th><th> Accéder aux formations du département</th></tr>
+
+</table>
+</div>
+
+{{#section 'scripts'}}
+<script>
+	var tabDpts = "{{departements}}".split("#") ;
+	table = document.getElementById("table");
+	table.setAttribute("id", "tableAdmin");
+	for (i = 0 ; i < tabDpts.length - 1 ; i++) { 
+		tr = document.createElement("tr");
+		
+		tdDpt = document.createElement("td");		
+		tdDpt.appendChild(document.createTextNode(tabDpts[i]));
+		
+		tdSuppDpt = document.createElement("td");		
+		btnDpt = document.createElement("button");
+		btnDpt.setAttribute("type", "submit");
+		btnDpt.setAttribute("class", "button-primary");
+		btnDpt.setAttribute("id", i.toString());
+		btnDpt.setAttribute("value", tabDpts[i]);
+		btnDpt.indice=i;
+		btnDpt.appendChild(document.createTextNode("Supprimer le département"));
+		tdSuppDpt.appendChild(btnDpt);	
+		btnDpt.onclick = function(){
+				const body = JSON.stringify({
+				nomDpt: document.getElementById(this.indice).value
+			})
+			const headers = { 'Content-Type': 'application/json' }
+			 fetch('/api/supprimeDepartement', { method: 'post', body, headers })
+				.then(resp => {
+					if(resp.status < 200 || resp.status >= 300)
+						throw new Error(`Request failed with status ${resp.status}`)
+					return resp.json()
+				})
+				.then(json => {    		  	
+					if  (json.result ===  'success') 
+						document.location.href="/accueilDepartementsAdmin" ;
+					else document.getElementById("erreur").innerHTML = '<b>' + json.message + '</b>';			
+				})
+				.catch(err => {	})		// traitement des erreurs levées côté client 		    	
+			};
+	
+
+		tdNouvResp = document.createElement("td");		
+		btnNouvResp = document.createElement("button");
+		btnNouvResp.setAttribute("type", "submit");
+		btnNouvResp.setAttribute("class", "button-primary");
+		btnNouvResp.appendChild(document.createTextNode("Ajouter un responsable au département"));
+		btnNouvResp.setAttribute("value", tabDpts[i]);
+		btnNouvResp.setAttribute("id", i.toString());
+		btnNouvResp.indice=i;
+		tdNouvResp.appendChild(btnNouvResp);
+		btnNouvResp.onclick = function(){
+			const body = JSON.stringify({
+				nomDpt: document.getElementById(this.indice).value
+			})
+			const headers = { 'Content-Type': 'application/json' }
+			fetch('/api/idDuDpt', { method: 'post', body, headers })
+				.then(resp => {
+					if(resp.status < 200 || resp.status >= 300)
+						throw new Error(`Request failed with status ${resp.status}`)
+					return resp.json()
+				})
+				.then(json => {    		  	
+					if  (json.result ===  'success') 
+						document.location.href="/ajoutResponsableDepartement?"+json.idDpt ;
+					else document.getElementById("erreur").innerHTML = '<b>' + json.message + '</b>';			
+				})
+				.catch(err => {	})		// traitement des erreurs levées côté client
+		}
+		
+		
+		tdAccesFormations = document.createElement("td");		
+		btnAccesFormations = document.createElement("button");
+		btnAccesFormations.setAttribute("type", "submit");
+		btnAccesFormations.setAttribute("class", "button-primary");
+		btnAccesFormations.setAttribute("value", tabDpts[i]);
+		btnAccesFormations.setAttribute("id", i.toString());
+		btnAccesFormations.indice=i;
+		btnAccesFormations.appendChild(document.createTextNode("Accéder aux formations du département"));
+		tdAccesFormations.appendChild(btnAccesFormations);
+		btnAccesFormations.onclick = function(){
+			const body = JSON.stringify({
+				nomDpt: document.getElementById(this.indice).value
+			})
+			const headers = { 'Content-Type': 'application/json' }
+			fetch('/api/idDuDpt', { method: 'post', body, headers })
+				.then(resp => {
+					if(resp.status < 200 || resp.status >= 300)
+						throw new Error(`Request failed with status ${resp.status}`)
+					return resp.json()
+				})
+				.then(json => {    		  	
+					if  (json.result ===  'success') 
+						document.location.href="/formationsAdmin?"+json.idDpt ;
+					else document.getElementById("erreur").innerHTML = '<b>' + json.message + '</b>';			
+				})
+				.catch(err => {	})		// traitement des erreurs levées côté client
+		}
+		
+		tr.appendChild (tdDpt);
+		tr.appendChild (tdSuppDpt);
+		tr.appendChild (tdNouvResp);	
+		tr.appendChild (tdAccesFormations);
+		table.appendChild(tr);
+	}
+	
+</script>
+{{/section}}
+
+<div class="form-group">
+	<label for="nouveauDpt" class="col-sm-2 control-label">Créer un nouveau département: </label>
+	<input type="text" id="nouveauDpt" class="form-control" required>
+	<button id="btnAjoutDpt" type="submit" class="button-primary">Valider</button>
+</div>
+
+<script>
+	btnAjoutDpt = document.getElementById("btnAjoutDpt");
+	btnAjoutDpt.onclick = function(){
+		const body = JSON.stringify({
+			nouveauDpt: document.getElementById('nouveauDpt').value
+		})
+		const headers = { 'Content-Type': 'application/json' }
+		  
+		 fetch('/api/nouveauDepartement', { method: 'post', body, headers })
+			.then(resp => {
+				if(resp.status < 200 || resp.status >= 300)
+					throw new Error(`Request failed with status ${resp.status}`)
+				return resp.json()
+			})
+			.then(json => {    		  	
+				if  (json.result ===  'success') 
+					document.location.href="/accueilDepartementsAdmin" ;
+				else document.getElementById("erreur").innerHTML = '<b>' + json.message + '</b>';			
+			})
+			.catch(err => {	})		// traitement des erreurs levées côté client 		    	
+		return 0;
+	};
+</script>
+
+
+<br/>
+<a href="/">Home</a>
+
+

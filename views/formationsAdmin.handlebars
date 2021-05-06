@@ -1,0 +1,158 @@
+<h6> 
+	<nav><strong>
+		<div class="u-pull-right">
+			<h6  id="ident">{{ident}}</h6>
+			<a   id="deconnexion" href="/">DÃ©connexion</a>
+		</div>
+		</strong>
+	</nav> 
+</h6>
+
+<br/>
+
+<div class="container">
+	<table id="table">
+		<tr> <th>Formations</th> <th>Supprimer la formation</th> <th>Changer le responsable de formation</th> </tr>
+	</table>
+</div>
+
+
+
+{{#section 'scripts'}}
+<script>
+	idDpt = document.location.search.slice(1);
+  	const body = JSON.stringify({
+		idDpt: idDpt
+	})
+
+	const headers = { 'Content-Type': 'application/json' }
+		  
+	fetch('/api/afficheFormations', { method: 'post', body, headers })
+		.then(resp => {
+          if(resp.status < 200 || resp.status >= 300)
+            throw new Error(`Request failed with status ${resp.status}`)
+          return resp.json()
+        })
+        .then(json => {    		  
+		    if  (json.result !==  'success') 
+				document.getElementById("erreur").innerHTML = '<b>' + json.message + '</b>';
+			else {  
+				var tabFormations = (json.formations).split("#") ;
+				table = document.getElementById("table");
+				for (i = 0 ; i < tabFormations.length - 1 ; i++) { 
+					tr = document.createElement("tr");
+		
+					tdFormations = document.createElement("td");		
+					tdFormations.appendChild(document.createTextNode(tabFormations[i]));
+
+
+					tdSuppFormation = document.createElement("td");		
+					btnSupp = document.createElement("button");
+					btnSupp.setAttribute("type", "submit");
+					btnSupp.setAttribute("class", "button-primary");
+					btnSupp.setAttribute("id", i.toString());
+					btnSupp.setAttribute("value", tabFormations[i]);
+					btnSupp.indice=i;
+					btnSupp.appendChild(document.createTextNode("Supprimer la formation"));
+					tdSuppFormation.appendChild(btnSupp);	
+					btnSupp.onclick = function(){
+							const body = JSON.stringify({
+								idDpt: idDpt,
+								formation: document.getElementById(this.indice).value
+						})
+						const headers = { 'Content-Type': 'application/json' }
+						 fetch('/api/supprimeFormation', { method: 'post', body, headers })
+							.then(resp => {
+								if(resp.status < 200 || resp.status >= 300)
+									throw new Error(`Request failed with status ${resp.status}`)
+								return resp.json()
+							})
+							.then(json => {    		  	
+								if  (json.result ===  'success')
+									document.location.href="/formationsAdmin?"+idDpt ;	
+								else 
+									document.getElementById("erreur").innerHTML = '<b>' + json.message + '</b>'; 			
+							})
+							.catch(err => {	})		// traitement des erreurs levées côté client 		    	
+						};
+
+
+					tdGestionFormation = document.createElement("td");		
+					btnGestion = document.createElement("button");
+					btnGestion.setAttribute("type", "submit");
+					btnGestion.setAttribute("class", "button-primary");
+					btnGestion.appendChild(document.createTextNode("Changer le responsable de formation"));
+					btnGestion.setAttribute("value", tabFormations[i]);
+					btnGestion.setAttribute("id", i.toString());
+					btnGestion.indice=i;
+					tdGestionFormation.appendChild(btnGestion);
+					btnGestion.onclick = function(){
+					const body = JSON.stringify({
+						formation: document.getElementById(this.indice).value
+					})
+					const headers = { 'Content-Type': 'application/json' }
+					fetch('/api/idFormation', { method: 'post', body, headers })
+						.then(resp => {
+							if(resp.status < 200 || resp.status >= 300)
+								throw new Error(`Request failed with status ${resp.status}`)
+							return resp.json()
+						})
+						.then(json => {    		  	
+							if  (json.result ===  'success') 
+								document.location.href="/gestionFormation?"+json.idFormation;
+							else document.getElementById("erreur").innerHTML = '<b>' + json.message + '</b>';			
+						}).catch(err => {	})		// traitement des erreurs levées côté client
+					}
+
+							tr.appendChild (tdFormations);
+							tr.appendChild (tdSuppFormation);		
+							tr.appendChild (tdGestionFormation);
+							table.appendChild(tr);
+						}
+					}
+				})
+				.catch(err => {	})		// traitement des erreurs levées côté client 	
+
+
+</script>
+{{/section}}
+
+
+<div class="form-group">
+	<label for="nouvelleFormation" class="col-sm-2 control-label">Créer une nouvelle formation: </label>
+	<input type="text" id="nouvelleFormation" class="form-control" required>
+	<button id="btnAjoutFormation" type="submit" class="button-primary">Valider</button>
+</div>
+
+
+<script>
+	idDpt = document.location.search.slice(1);
+	btnAjoutFormation = document.getElementById("btnAjoutFormation");
+	btnAjoutFormation.onclick = function(){
+		const body = JSON.stringify({
+			idDpt: idDpt,
+			formation: document.getElementById('nouvelleFormation').value
+		})
+		const headers = { 'Content-Type': 'application/json' }
+		  
+		 fetch('/api/nouvelleFormation', { method: 'post', body, headers })
+			.then(resp => {
+				if(resp.status < 200 || resp.status >= 300)
+					throw new Error(`Request failed with status ${resp.status}`)
+				return resp.json()
+			})
+			.then(json => {    		  	
+				if  (json.result ===  'success') 
+					document.location.href="/formationsAdmin?"+idDpt ;
+				else document.getElementById("erreur").innerHTML = '<b>' + json.message + '</b>';			
+			})
+			.catch(err => {	})		// traitement des erreurs levées côté client 		    	
+		return 0;
+	};
+</script>
+
+
+<br/>
+<a href="/">Home</a>
+
+
