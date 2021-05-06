@@ -10,5 +10,5 @@ Installation et lancement du projet :
     <li>npm install multiparty</li>
     <li>npm install express-session</li>
     <li>node apola.js</li>
-    <li>http://localhost:3000</li>
+    <li>firefox http://localhost:3000</li>
   </ul>
